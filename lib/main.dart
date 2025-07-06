@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:study_planner_u6_9/pages/home_page.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:study_planner_u6_9/router/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,8 +15,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: "Study Planner",
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: GoogleFonts.poppins().fontFamily,
+      ),
+      routerConfig: RouterClass.router,
     );
   }
 }
