@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:study_planner_u6_9/models/course_model.dart';
+import 'package:study_planner_u6_9/providers/course_provider.dart';
 import 'package:study_planner_u6_9/widgets/custom_button.dart';
 import 'package:study_planner_u6_9/widgets/custom_input_field.dart';
+import 'package:study_planner_u6_9/widgets/custom_snackbar.dart';
 
-class AddNewCoursePage extends StatelessWidget {
+class AddNewCoursePage extends ConsumerWidget {
   AddNewCoursePage({super.key});
 
   final _formKey = GlobalKey<FormState>();
@@ -16,15 +21,29 @@ class AddNewCoursePage extends StatelessWidget {
   final TextEditingController _courseInstructorController =
       TextEditingController();
 
-  void _submitForm(BuildContext context) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState!.save();
-      debugPrint("submited");
+  void _submitForm(BuildContext context, WidgetRef ref) async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
     }
+    _formKey.currentState!.save();
+    ref.read(courseProvider.notifier).addCourse(
+          Course(
+            id: "",
+            name: _courseNameController.text.trim(),
+            description: _courseDescriptionController.text.trim(),
+            duration: _courseDurationController.text.trim(),
+            schedule: _courseScheduleController.text.trim(),
+            instructor: _courseInstructorController.text.trim(),
+          ),
+        );
+    debugPrint("Firestore saved");
+    showSnackBar(context, "Course added successfully");
+    await Future.delayed(Duration(seconds: 2));
+    if (context.mounted) GoRouter.of(context).pop();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(),
       body: Form(
@@ -102,8 +121,8 @@ class AddNewCoursePage extends StatelessWidget {
                 ),
                 CustomButton(
                   text: "Save",
-                  onPressed: () {
-                    _submitForm(context);
+                  onPressed: () async {
+                    _submitForm(context, ref);
                   },
                 )
               ],
