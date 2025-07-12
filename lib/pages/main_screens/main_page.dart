@@ -104,7 +104,12 @@ class MainPage extends ConsumerWidget {
                                 fontSize: 12,
                               ),
                             ),
-                            onTap: () {},
+                            onTap: () {
+                              GoRouter.of(context).push(
+                                "/single-course",
+                                extra: course,
+                              );
+                            },
                           ),
                         ),
                       );
