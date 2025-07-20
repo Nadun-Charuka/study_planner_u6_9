@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:study_planner_u6_9/models/assignment_model.dart';
 import 'package:study_planner_u6_9/models/course_model.dart';
+import 'package:study_planner_u6_9/providers/assignment_provider.dart';
 import 'package:study_planner_u6_9/widgets/custom_button.dart';
 import 'package:study_planner_u6_9/widgets/custom_input_field.dart';
 import 'package:study_planner_u6_9/widgets/custom_snackbar.dart';
 
-class AddNewAssignmentPage extends StatelessWidget {
+class AddNewAssignmentPage extends ConsumerWidget {
   final Course course;
 
   AddNewAssignmentPage({
@@ -52,15 +55,27 @@ class AddNewAssignmentPage extends StatelessWidget {
   }
 
   //submit form
-  void _submitForm(BuildContext context) async {
+  void _submitForm(BuildContext context, WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       debugPrint("From valid");
+      _formKey.currentState!.save();
+      await ref.read(assignmentProvider(course.id).notifier).addAssignment(
+            Assignment(
+              id: "",
+              name: _assignmentNameController.text.trim(),
+              description: _assignmentDescriptionController.text.trim(),
+              duration: _assignmentDurationController.text.trim(),
+              dueDate: _selectedDate.value,
+              dueTime: _selectedTime.value,
+            ),
+          );
+
       showSnackBar(context, "Assignment added sucessfully");
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -175,7 +190,7 @@ class AddNewAssignmentPage extends StatelessWidget {
               CustomButton(
                 text: "Add Assignment",
                 onPressed: () {
-                  _submitForm(context);
+                  _submitForm(context, ref);
                 },
               ),
             ],

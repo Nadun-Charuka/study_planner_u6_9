@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_planner_u6_9/models/course_model.dart';
+import 'package:study_planner_u6_9/models/note_model.dart';
+import 'package:study_planner_u6_9/providers/note_provider.dart';
 import 'package:study_planner_u6_9/widgets/custom_button.dart';
 import 'package:study_planner_u6_9/widgets/custom_input_field.dart';
 import 'package:study_planner_u6_9/widgets/custom_snackbar.dart';
 
-class AddNewNotePage extends StatefulWidget {
+class AddNewNotePage extends ConsumerStatefulWidget {
   final Course course;
   const AddNewNotePage({
     super.key,
@@ -15,10 +18,10 @@ class AddNewNotePage extends StatefulWidget {
   });
 
   @override
-  State<AddNewNotePage> createState() => _AddNewNotePageState();
+  ConsumerState<AddNewNotePage> createState() => _AddNewNotePageState();
 }
 
-class _AddNewNotePageState extends State<AddNewNotePage> {
+class _AddNewNotePageState extends ConsumerState<AddNewNotePage> {
   final _fromKey = GlobalKey<FormState>();
 
   final TextEditingController _titleController = TextEditingController();
@@ -34,10 +37,10 @@ class _AddNewNotePageState extends State<AddNewNotePage> {
   XFile? _selectedImage;
 
   Future<void> _pickImage() async {
-    final XFile? _image =
+    final XFile? image =
         await _imagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      _selectedImage = _image;
+      _selectedImage = image;
     });
   }
 
@@ -50,6 +53,17 @@ class _AddNewNotePageState extends State<AddNewNotePage> {
 
   void _submintForm(BuildContext context) async {
     if (_fromKey.currentState?.validate() ?? false) {
+      _fromKey.currentState!.save();
+      ref.read(noteProvider(widget.course.id).notifier).addNote(
+            Note(
+              id: "",
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim(),
+              section: _sectionController.text.trim(),
+              reference: _referencesController.text.trim(),
+            ),
+            _selectedImage != null ? File(_selectedImage!.path) : null,
+          );
       debugPrint("valid form");
       showSnackBar(context, "Note save Successfully");
       _clearAllFields();

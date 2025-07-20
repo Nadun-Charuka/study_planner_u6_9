@@ -16,6 +16,7 @@ class SingleCoursePage extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
           child: Column(
+            spacing: 5,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -26,7 +27,6 @@ class SingleCoursePage extends ConsumerWidget {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 5),
               Text(
                 'Instructor: ${course.instructor}',
                 style: const TextStyle(
@@ -34,7 +34,6 @@ class SingleCoursePage extends ConsumerWidget {
                   color: Colors.white60,
                 ),
               ),
-              const SizedBox(height: 5),
               Text(
                 'Duration: ${course.duration}',
                 style: const TextStyle(
@@ -42,7 +41,6 @@ class SingleCoursePage extends ConsumerWidget {
                   color: Colors.white60,
                 ),
               ),
-              const SizedBox(height: 5),
               Text(
                 'Schedule: ${course.schedule}',
                 style: const TextStyle(
@@ -50,7 +48,6 @@ class SingleCoursePage extends ConsumerWidget {
                   color: Colors.white60,
                 ),
               ),
-              const SizedBox(height: 20),
               const Text(
                 'Description',
                 style: TextStyle(
