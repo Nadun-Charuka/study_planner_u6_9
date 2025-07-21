@@ -69,12 +69,10 @@ class _AddNewNotePageState extends ConsumerState<AddNewNotePage> {
         _selectedImage != null ? File(_selectedImage!.path) : null,
       );
 
-      if (!mounted) return;
-      showSnackBar(context, "Note saved successfully");
+      if (context.mounted) showSnackBar(context, "Note saved successfully");
       _clearAllFields();
     } catch (e) {
-      if (!mounted) return;
-      showSnackBar(context, "Error saving note: $e");
+      if (context.mounted) showSnackBar(context, "Error saving note: $e");
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -99,7 +97,7 @@ class _AddNewNotePageState extends ConsumerState<AddNewNotePage> {
                 spacing: 50,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Image uploading"),
+                  Text("Image uploading dont go back"),
                   CircularProgressIndicator(),
                 ],
               ),

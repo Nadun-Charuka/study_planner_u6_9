@@ -69,6 +69,19 @@ class SingleAssignmentPage extends StatelessWidget {
                 color: Colors.grey,
               ),
             ),
+            SizedBox(height: 40),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.edit),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.delete),
+                ),
+              ],
+            ),
           ],
         ),
       ),

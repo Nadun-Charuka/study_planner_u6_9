@@ -24,4 +24,12 @@ class AssignmentService {
     final doc = await docRef.get();
     return Assignment.fromJson(doc.data() as Map<String, dynamic>, doc.id);
   }
+
+  Future<void> deleteAssignment(String id) async {
+    await _assignmentCollection.doc(id).delete();
+  }
+
+  Future<void> updateAssignment(String id, Map<String, dynamic> data) async {
+    await _assignmentCollection.doc(id).update(data);
+  }
 }

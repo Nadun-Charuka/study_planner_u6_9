@@ -94,7 +94,8 @@ class CoursesPage extends ConsumerWidget {
                                       child: ListTile(
                                         title: Text(assignment.name),
                                         subtitle: Text(
-                                            "Due Date: ${assignment.dueDateTime.toString().split(" ")[0]}"),
+                                          "Due Date: ${assignment.dueDateTime.toString().split(" ")[0]}",
+                                        ),
                                       ),
                                       onTap: () {
                                         GoRouter.of(context).push(
