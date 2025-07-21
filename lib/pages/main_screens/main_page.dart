@@ -9,7 +9,7 @@ class MainPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final courseAsync = ref.watch(courseProvider);
+    final courseAsync = ref.watch(courseStreamProvider);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(

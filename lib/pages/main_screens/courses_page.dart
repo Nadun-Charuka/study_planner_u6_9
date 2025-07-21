@@ -11,7 +11,7 @@ class CoursesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final courseAsync = ref.watch(courseProvider);
+    final courseAsync = ref.watch(courseStreamProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,8 +24,9 @@ class CoursesPage extends ConsumerWidget {
           itemCount: courses.length,
           itemBuilder: (context, index) {
             final course = courses[index];
-            final assignmentAsync = ref.watch(assignmentProvider(course.id));
-            final noteAssync = ref.watch(noteProvider(course.id));
+            final assignmentAsync =
+                ref.watch(assignmentStreamProvider(course.id));
+            final noteAssync = ref.watch(noteStreamProvider(course.id));
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Card(

@@ -9,7 +9,7 @@ class AssignmentsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final courseAsync = ref.watch(courseProvider);
+    final courseAsync = ref.watch(courseStreamProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text("Assignments")),
@@ -18,7 +18,8 @@ class AssignmentsPage extends ConsumerWidget {
           itemCount: courses.length,
           itemBuilder: (context, courseIndex) {
             final course = courses[courseIndex];
-            final assignmentAsync = ref.watch(assignmentProvider(course.id));
+            final assignmentAsync =
+                ref.watch(assignmentStreamProvider(course.id));
 
             return assignmentAsync.when(
               data: (assignments) => ExpansionTile(

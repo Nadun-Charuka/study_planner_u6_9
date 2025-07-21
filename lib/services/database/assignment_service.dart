@@ -10,16 +10,18 @@ class AssignmentService {
       .doc(courseId)
       .collection("assignment");
 
+  Stream<List<Assignment>> streamAssignments() {
+    return _assignmentCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Assignment.fromJson(data, doc.id);
+      }).toList();
+    });
+  }
+
   Future<Assignment> createAssignment(Assignment assignment) async {
     final docRef = await _assignmentCollection.add(assignment.toJson());
     final doc = await docRef.get();
     return Assignment.fromJson(doc.data() as Map<String, dynamic>, doc.id);
-  }
-
-  Future<List<Assignment>> getAssignments() async {
-    final snapshot = await _assignmentCollection.get();
-    return snapshot.docs
-        .map((e) => Assignment.fromJson(e.data() as Map<String, dynamic>, e.id))
-        .toList();
   }
 }

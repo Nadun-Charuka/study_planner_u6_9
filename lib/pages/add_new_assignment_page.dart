@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:study_planner_u6_9/models/assignment_model.dart';
 import 'package:study_planner_u6_9/models/course_model.dart';
-import 'package:study_planner_u6_9/providers/assignment_provider.dart';
+import 'package:study_planner_u6_9/services/database/assignment_service.dart';
 import 'package:study_planner_u6_9/widgets/custom_button.dart';
 import 'package:study_planner_u6_9/widgets/custom_input_field.dart';
 import 'package:study_planner_u6_9/widgets/custom_snackbar.dart';
@@ -60,18 +60,17 @@ class _AddNewAssignmentPageState extends ConsumerState<AddNewAssignmentPage> {
       return;
     }
 
-    await ref.read(assignmentProvider(widget.course.id).notifier).addAssignment(
-          Assignment(
-            id: "",
-            name: _assignmentNameController.text.trim(),
-            description: _assignmentDescriptionController.text.trim(),
-            duration: _assignmentDurationController.text.trim(),
-            dueDateTime: _dueDateTime!,
-          ),
-        );
+    await AssignmentService(courseId: widget.course.id).createAssignment(
+      Assignment(
+        id: "",
+        name: _assignmentNameController.text.trim(),
+        description: _assignmentDescriptionController.text.trim(),
+        duration: _assignmentDurationController.text.trim(),
+        dueDateTime: _dueDateTime!,
+      ),
+    );
 
-    showSnackBar(context, "Assignment added successfully");
-    Navigator.pop(context);
+    if (context.mounted) showSnackBar(context, "Assignment added successfully");
   }
 
   @override

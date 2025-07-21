@@ -11,10 +11,20 @@ class CourseService {
     return Course.fromJson(doc.data() as Map<String, dynamic>, doc.id);
   }
 
-  Future<List<Course>> getCourses() async {
-    final snapshot = await _courseCollection.get();
-    return snapshot.docs
-        .map((e) => Course.fromJson(e.data() as Map<String, dynamic>, e.id))
-        .toList();
+  Stream<List<Course>> streamCourses() {
+    return _courseCollection.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Course.fromJson(data, doc.id);
+      }).toList();
+    });
+  }
+
+  Future<void> updateCourse(String id, Course updatedCourse) async {
+    await _courseCollection.doc(id).update(updatedCourse.toJson());
+  }
+
+  Future<void> deleteCourse(String id) async {
+    await _courseCollection.doc(id).delete();
   }
 }
