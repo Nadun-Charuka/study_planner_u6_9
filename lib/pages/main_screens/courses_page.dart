@@ -89,10 +89,17 @@ class CoursesPage extends ConsumerWidget {
                                   final assignment = assignments[index];
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: ListTile(
-                                      title: Text(assignment.name),
-                                      subtitle: Text(
-                                          "Due Date: ${assignment.dueDate.toString().split(" ")[0]}"),
+                                    child: GestureDetector(
+                                      child: ListTile(
+                                        title: Text(assignment.name),
+                                        subtitle: Text(
+                                            "Due Date: ${assignment.dueDateTime.toString().split(" ")[0]}"),
+                                      ),
+                                      onTap: () {
+                                        GoRouter.of(context).push(
+                                            "/single-assignment-page",
+                                            extra: assignment);
+                                      },
                                     ),
                                   );
                                 },

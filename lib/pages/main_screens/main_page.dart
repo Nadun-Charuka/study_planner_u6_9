@@ -78,43 +78,54 @@ class MainPage extends ConsumerWidget {
                   ),
                 ),
                 courseAsync.when(
-                  data: (courses) => ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: courses.length,
-                    itemBuilder: (context, index) {
-                      final course = courses[index];
-                      return Card(
-                        color: lightGreen,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: ListTile(
-                            title: Text(
-                              course.name,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
+                  data: (courses) => courses.isNotEmpty
+                      ? ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: courses.length,
+                          itemBuilder: (context, index) {
+                            final course = courses[index];
+                            return Card(
+                              color: lightGreen,
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                child: ListTile(
+                                  title: Text(
+                                    course.name,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    course.description,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    GoRouter.of(context).push(
+                                      "/single-course",
+                                      extra: course,
+                                    );
+                                  },
+                                ),
                               ),
+                            );
+                          },
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 100.0),
+                          child: Center(
+                            child: Image.asset(
+                              "assets/course.png",
+                              width: 300,
                             ),
-                            subtitle: Text(
-                              course.description,
-                              style: const TextStyle(
-                                color: Colors.black87,
-                                fontSize: 12,
-                              ),
-                            ),
-                            onTap: () {
-                              GoRouter.of(context).push(
-                                "/single-course",
-                                extra: course,
-                              );
-                            },
                           ),
                         ),
-                      );
-                    },
-                  ),
                   error: (error, stackTrace) => Text("error"),
                   loading: () => CircularProgressIndicator(),
                 )

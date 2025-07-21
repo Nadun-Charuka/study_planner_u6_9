@@ -6,195 +6,145 @@ import 'package:study_planner_u6_9/providers/assignment_provider.dart';
 import 'package:study_planner_u6_9/widgets/custom_button.dart';
 import 'package:study_planner_u6_9/widgets/custom_input_field.dart';
 import 'package:study_planner_u6_9/widgets/custom_snackbar.dart';
+import 'package:intl/intl.dart';
 
-class AddNewAssignmentPage extends ConsumerWidget {
+class AddNewAssignmentPage extends ConsumerStatefulWidget {
   final Course course;
+  const AddNewAssignmentPage({super.key, required this.course});
 
-  AddNewAssignmentPage({
-    super.key,
-    required this.course,
-  }) {
-    _selectedDate.value = DateTime.now();
-    _selectedTime.value = TimeOfDay.now();
-  }
+  @override
+  ConsumerState<AddNewAssignmentPage> createState() =>
+      _AddNewAssignmentPageState();
+}
 
+class _AddNewAssignmentPageState extends ConsumerState<AddNewAssignmentPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _assignmentNameController =
-      TextEditingController();
-  final TextEditingController _assignmentDescriptionController =
-      TextEditingController();
-  final TextEditingController _assignmentDurationController =
-      TextEditingController();
+  final _assignmentNameController = TextEditingController();
+  final _assignmentDescriptionController = TextEditingController();
+  final _assignmentDurationController = TextEditingController();
 
-  final ValueNotifier<DateTime> _selectedDate =
-      ValueNotifier<DateTime>(DateTime.now());
-  final ValueNotifier<TimeOfDay> _selectedTime =
-      ValueNotifier<TimeOfDay>(TimeOfDay.now());
+  DateTime? _dueDateTime;
 
-  Future<void> datePicker(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _pickDueDateTime() async {
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
       firstDate: DateTime(2023),
       lastDate: DateTime(2026),
+      initialDate: DateTime.now(),
     );
 
-    if (picked != null && picked != _selectedDate.value) {
-      _selectedDate.value = picked;
-    }
-  }
+    if (pickedDate == null) return;
 
-  Future<void> timePicker(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
+    final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: _selectedTime.value,
+      initialTime: TimeOfDay.now(),
     );
 
-    if (picked != null && picked != _selectedTime.value) {
-      _selectedTime.value = picked;
-    }
+    if (pickedTime == null) return;
+
+    setState(() {
+      _dueDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+    });
   }
 
-  //submit form
-  void _submitForm(BuildContext context, WidgetRef ref) async {
-    if (_formKey.currentState!.validate()) {
-      debugPrint("From valid");
-      _formKey.currentState!.save();
-      await ref.read(assignmentProvider(course.id).notifier).addAssignment(
-            Assignment(
-              id: "",
-              name: _assignmentNameController.text.trim(),
-              description: _assignmentDescriptionController.text.trim(),
-              duration: _assignmentDurationController.text.trim(),
-              dueDate: _selectedDate.value,
-              dueTime: _selectedTime.value,
-            ),
-          );
-
-      showSnackBar(context, "Assignment added sucessfully");
+  void _submitForm() async {
+    if (!_formKey.currentState!.validate() || _dueDateTime == null) {
+      showSnackBar(
+          context, "Please fill all fields and select due date & time");
+      return;
     }
+
+    await ref.read(assignmentProvider(widget.course.id).notifier).addAssignment(
+          Assignment(
+            id: "",
+            name: _assignmentNameController.text.trim(),
+            description: _assignmentDescriptionController.text.trim(),
+            duration: _assignmentDurationController.text.trim(),
+            dueDateTime: _dueDateTime!,
+          ),
+        );
+
+    showSnackBar(context, "Assignment added successfully");
+    Navigator.pop(context);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 5,
-            children: [
-              const Text(
-                'Add New Assignment',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+  void dispose() {
+    _assignmentNameController.dispose();
+    _assignmentDescriptionController.dispose();
+    _assignmentDurationController.dispose();
+    super.dispose();
+  }
 
-              //description
-              const Text(
-                'Fill in the details below to add a new assignment. And start managing your study planner.',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    // "value?.isEmpty ?? true "can return true,false,null so if null we assueme it as true
-                    CustomInputField(
-                      controller: _assignmentNameController,
-                      labelText: "Assignment name",
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Please enter the assignment name';
-                        }
-                        return null;
-                      },
-                    ),
-                    CustomInputField(
-                      controller: _assignmentDescriptionController,
-                      labelText: "Assignment description",
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Please enter the assignment description';
-                        }
-                        return null;
-                      },
-                    ),
-                    CustomInputField(
-                      controller: _assignmentDurationController,
-                      labelText: "Duration (e.g., 1 hour)",
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Please enter the assignment duration';
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Divider(),
-              const Text(
-                'Due Date and Time',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white60,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ValueListenableBuilder(
-                valueListenable: _selectedDate,
-                builder: (context, date, child) {
-                  return Row(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Add New Assignment')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Fill in the details below to add a new assignment.',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            Form(
+              key: _formKey,
+              child: Column(
+                spacing: 10,
+                children: [
+                  CustomInputField(
+                    controller: _assignmentNameController,
+                    labelText: "Assignment name",
+                    validator: (value) =>
+                        (value?.isEmpty ?? true) ? 'Required' : null,
+                  ),
+                  CustomInputField(
+                    controller: _assignmentDescriptionController,
+                    labelText: "Assignment description",
+                    validator: (value) =>
+                        (value?.isEmpty ?? true) ? 'Required' : null,
+                  ),
+                  CustomInputField(
+                    controller: _assignmentDurationController,
+                    labelText: "Duration (e.g., 1 hour)",
+                    validator: (value) =>
+                        (value?.isEmpty ?? true) ? 'Required' : null,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
                     children: [
                       Expanded(
                         child: Text(
-                            "Date : ${date.toLocal().toString().split(" ")[0]}"),
+                          _dueDateTime == null
+                              ? "No due date selected"
+                              : "Due: ${DateFormat('yyyy-MM-dd hh:mm a').format(_dueDateTime!)}",
+                          style: const TextStyle(color: Colors.white70),
+                        ),
                       ),
                       IconButton(
-                        onPressed: () {
-                          datePicker(context);
-                        },
-                        icon: Icon(Icons.calendar_month),
-                      )
-                    ],
-                  );
-                },
-              ),
-              ValueListenableBuilder(
-                valueListenable: _selectedTime,
-                builder: (context, time, child) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: Text("Time : ${time.format(context)}"),
+                        onPressed: _pickDueDateTime,
+                        icon: const Icon(Icons.calendar_today),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          timePicker(context);
-                        },
-                        icon: Icon(Icons.access_time),
-                      )
                     ],
-                  );
-                },
+                  ),
+                  const SizedBox(height: 16),
+                  CustomButton(
+                    text: "Add Assignment",
+                    onPressed: _submitForm,
+                  ),
+                ],
               ),
-              CustomButton(
-                text: "Add Assignment",
-                onPressed: () {
-                  _submitForm(context, ref);
-                },
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

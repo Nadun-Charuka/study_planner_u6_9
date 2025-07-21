@@ -1,21 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 class Assignment {
   final String id;
   final String name;
   final String description;
   final String duration;
-  final DateTime dueDate;
-  final TimeOfDay dueTime;
+  final DateTime dueDateTime;
 
   Assignment({
     required this.id,
     required this.name,
     required this.description,
     required this.duration,
-    required this.dueDate,
-    required this.dueTime,
+    required this.dueDateTime,
   });
 
   factory Assignment.fromJson(Map<String, dynamic> json, String docId) {
@@ -24,8 +21,7 @@ class Assignment {
       name: json['name'],
       description: json['description'],
       duration: json['duration'],
-      dueDate: (json['dueDate'] as Timestamp).toDate(),
-      dueTime: TimeOfDay.fromDateTime((json['dueTime'] as Timestamp).toDate()),
+      dueDateTime: (json['dueDateTime'] as Timestamp).toDate(),
     );
   }
 
@@ -34,14 +30,7 @@ class Assignment {
       'name': name,
       'description': description,
       'duration': duration,
-      'dueDate': Timestamp.fromDate(dueDate),
-      'dueTime': Timestamp.fromDate(DateTime(
-        dueDate.year,
-        dueDate.month,
-        dueDate.day,
-        dueTime.hour,
-        dueTime.minute,
-      ))
+      'dueDateTime': Timestamp.fromDate(dueDateTime),
     };
   }
 }
